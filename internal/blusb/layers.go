@@ -89,17 +89,6 @@ func (ls Layers) MarshalBinary() (data []byte, err error) {
 // UnmarshalBinary decodes a layers data packet.  It consists of 1-byte to
 // indicate the number of layers and 160-bytes for each layer.
 func (ls *Layers) UnmarshalBinary(data []byte) error {
-	//		          1                   2                   3
-	//    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	//   |    # Layers   | Layer 1 Row 0 Col 0 Key Code  | Row 0, Col..  |
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	//   | 1 Key Code    |     Row 0, Col 2 Key Code     | ...           |
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	//   | ...           | Layer 2 Row 0 Col 0 Key Code  | Row 0, Col..  |
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	//   | 1 Key Code    |     Row 0, Col 2 Key Code     | ...           |
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	var l Layer
 	var r, c int
 	var numLayers = int(data[0])
@@ -230,20 +219,18 @@ func (p *layersPager) Read(b []byte) (int, error) {
 }
 
 func (p *layersPager) Write(b []byte) (int, error) {
-	//		          1                   2                   3
-	//    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	//   |       ID     |  Total pages   | Current Page  | Data          |
-	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	const (
-		totalPages  = 1
-		currentPage = 2
+		idOff          = 0
+		totalPagesOff  = 1
+		currentPageOff = 2
 	)
 
 	if len(b) < layersPageHeadSize {
 		return 0, io.ErrShortWrite
 	}
-	if int(b[currentPage]) != p.lastPageWrite+1 {
+	// XXX ID should be featLayers but it comes through as zero
+	if (idOff != 0 && idOff != featLayers) ||
+		int(b[currentPageOff]) != p.lastPageWrite+1 {
 		return 0, io.ErrNoProgress
 	}
 	p.lastPageWrite++
@@ -252,7 +239,7 @@ func (p *layersPager) Write(b []byte) (int, error) {
 	// copy() instead.
 	p.buf = append(p.buf, b[layersPageHeadSize:]...)
 
-	if b[totalPages] == b[currentPage] {
+	if b[totalPagesOff] == b[currentPageOff] {
 		return len(b), io.EOF
 	}
 
