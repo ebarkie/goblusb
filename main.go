@@ -5,12 +5,14 @@
 package main
 
 import (
+	"context"
 	"encoding"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"time"
 
 	"gitlab.com/ebarkie/goblusb/internal/blusb"
 )
@@ -61,6 +63,8 @@ func main() {
 	getLayers := flag.Bool("get-layers", false, "get layers")
 	getMacros := flag.Bool("get-macros", false, "get macro keys")
 	to := flag.String("to", "", "write to file")
+
+	monitorMatrix := flag.Bool("monitor-matrix", false, "monitor for key presses")
 
 	setBright := uints{Want: 2}
 	flag.Var(&setBright, "set-brightness", "set usb,bt brightness")
@@ -135,6 +139,30 @@ func main() {
 			if err := writeTextFile(macros, *to); err != nil {
 				fmt.Printf("Save macros error: %s\n", err)
 			}
+		}
+	}
+
+	if *monitorMatrix {
+		// Monitoring too quickly after pressing enter to start this
+		// command bombards standard input with repeating carriage
+		// returns so sleep a little bit.
+		time.Sleep(500 * time.Millisecond)
+
+		// XXX Safeguard in case something goes wrong and another
+		// keyboard isn't handy.  Maybe remove this in the future.
+		dur := 30 * time.Second
+		fmt.Printf("Monitoring matrix for up to %s.  Press the same key twice in a row to exit sooner.\n\n", dur)
+
+		ctx, cancel := context.WithTimeout(context.Background(), dur)
+		defer cancel()
+		var prevPos blusb.MatrixPos
+		for pos := range c.MonitorMatrix(ctx) {
+			fmt.Println(pos)
+
+			if pos == prevPos {
+				cancel()
+			}
+			prevPos = pos
 		}
 	}
 

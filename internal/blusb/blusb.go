@@ -107,6 +107,5 @@ func (c Controller) getControlReport(feat byte, b []byte) (int, error) {
 func (c Controller) setControlReport(b []byte) error {
 	_, err := c.dev.Control(gousb.ControlInterface|gousb.ControlOut|gousb.ControlClass,
 		reqSetReport, repFeature|uint16(b[0]), 0, b)
-
 	return err
 }

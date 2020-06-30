@@ -7,7 +7,6 @@ Things that it doesn't do but would be nice:
 
 * Unit tests!
 * Update firmware
-* Read matrix
 * Enter/exit bootloader
 * Break down modifier and keycodes into clearer structs and types instad of
   uint's.
@@ -22,7 +21,7 @@ $ go get gitlab.com/ebarkie/goblusb
 ## Usage
 
 ```
-Usage of ./go-blusb:
+Usage of ./goblusb:
   -get-brightness
     	get usb and bt brightness
   -get-debounce
@@ -31,6 +30,8 @@ Usage of ./go-blusb:
     	get layers
   -get-macros
     	get macro keys
+  -monitor-matrix
+    	monitor for key presses
   -set-brightness value
     	set usb,bt brightness
   -set-debounce duration

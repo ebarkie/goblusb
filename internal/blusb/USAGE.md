@@ -82,10 +82,11 @@ GetMacros returns the macro table stored in the controller.
 #### func (Controller) GetMatrix
 
 ```go
-func (c Controller) GetMatrix() (int, int, error)
+func (c Controller) GetMatrix() (pos MatrixPos, err error)
 ```
 GetMatrix is a gets the matrix row and column for the current key being pressed.
-This is non-blocking and if no key is being pressed it returns 0, 0.
+This is non-blocking and there aren't any keys being pressed it returns a zero
+value.
 
 #### func (Controller) GetVersion
 
@@ -94,6 +95,14 @@ func (c Controller) GetVersion() (int, int, error)
 ```
 GetVersion returns the controller firmware version as major and minor integers.
 These are usually written as "major.minor".
+
+#### func (Controller) MonitorMatrix
+
+```go
+func (c Controller) MonitorMatrix(ctx context.Context) <-chan MatrixPos
+```
+MonitorMatrix returns a channel and sends keypress matrix positions. A key that
+is held down will be sent as a single keypress.
 
 #### func (Controller) SetBrightness
 
@@ -256,3 +265,33 @@ func (ms *Macros) UnmarshalText(text []byte) error
 UnmarshalText parses a CSV formatted macro table that consists of one line for
 each macro with each macro consisting of it's parts encoded as hexadecimal codes
 and separated by commas.
+
+#### type MatrixPos
+
+```go
+type MatrixPos struct {
+	Row, Col int
+}
+```
+
+MatrixPos represents a keyboard matrix position.
+
+#### func (MatrixPos) IsZero
+
+```go
+func (p MatrixPos) IsZero() bool
+```
+IsZero indicates if the position is empty.
+
+#### func (MatrixPos) String
+
+```go
+func (p MatrixPos) String() string
+```
+
+#### func (*MatrixPos) UnmarshalBinary
+
+```go
+func (p *MatrixPos) UnmarshalBinary(data []byte) error
+```
+UnmarshalBinary decodes an 8-byte matrix report data packet.
