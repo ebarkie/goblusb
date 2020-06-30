@@ -28,8 +28,8 @@ func (p *MatrixPos) UnmarshalBinary(data []byte) error {
 }
 
 // GetMatrix is a gets the matrix row and column for the current key being
-// pressed.  This is non-blocking and there aren't any keys being pressed it
-// returns a zero value.
+// pressed.  This is non-blocking and if no keys being pressed it returns a
+// zero value.
 func (c Controller) GetMatrix() (pos MatrixPos, err error) {
 	data := make([]byte, 8)
 	_, err = c.getControlReport(featMatrix, data)
