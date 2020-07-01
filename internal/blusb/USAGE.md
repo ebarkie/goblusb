@@ -1,5 +1,4 @@
 # blusb
-
 ```go
 import "gitlab.com/ebarkie/goblusb/internal/blusb"
 ```
@@ -49,6 +48,20 @@ func (c *Controller) Close()
 ```
 Close releases the controller.
 
+#### func (Controller) EnterBoot
+
+```go
+func (c Controller) EnterBoot() error
+```
+EnterBoot signals the firmware to enter the bootloader.
+
+#### func (Controller) ExitBoot
+
+```go
+func (c Controller) ExitBoot() error
+```
+ExitBoot signals the bootloader to exit and boot the firmware.
+
 #### func (Controller) GetBrightness
 
 ```go
@@ -85,8 +98,7 @@ GetMacros returns the macro table stored in the controller.
 func (c Controller) GetMatrix() (pos MatrixPos, err error)
 ```
 GetMatrix is a gets the matrix row and column for the current key being pressed.
-This is non-blocking and there aren't any keys being pressed it returns a zero
-value.
+This is non-blocking and if no keys being pressed it returns a zero value.
 
 #### func (Controller) GetVersion
 
