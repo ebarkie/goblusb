@@ -180,10 +180,6 @@ type layersPager struct {
 	prevPageWrite int
 }
 
-func newLayersPager(buf []byte) layersPager {
-	return layersPager{Buffer: bytes.NewBuffer(buf)}
-}
-
 func (p *layersPager) Reset() {
 	p.Buffer.Reset()
 
@@ -250,7 +246,8 @@ func (p *layersPager) Write(b []byte) (int, error) {
 // GetLayers returns the layers stored in the controller.
 func (c Controller) GetLayers() (ls Layers, err error) {
 	// Read all layer pages into a buffer.
-	p := newLayersPager([]byte{})
+	var p layersPager
+	p.Buffer = &bytes.Buffer{}
 	for {
 		page := make([]byte, layersPageSize)
 		_, err = c.getControlReport(firmLayers, page)
@@ -280,7 +277,8 @@ func (c Controller) SetLayers(ls Layers) error {
 	}
 
 	// Create layer pages from data and write to controller.
-	p := newLayersPager(data)
+	var p layersPager
+	p.Buffer = bytes.NewBuffer(data)
 	for {
 		page := make([]byte, layersPageSize)
 		_, err := p.Read(page)
