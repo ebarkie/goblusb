@@ -167,7 +167,7 @@ const (
 )
 
 type layersPager struct {
-	buf *bytes.Buffer
+	*bytes.Buffer
 
 	// Layers page header
 	//
@@ -181,17 +181,11 @@ type layersPager struct {
 }
 
 func newLayersPager(buf []byte) layersPager {
-	return layersPager{buf: bytes.NewBuffer(buf)}
+	return layersPager{Buffer: bytes.NewBuffer(buf)}
 }
 
-func (p layersPager) Bytes() []byte { return p.buf.Bytes() }
-
-func (p layersPager) Cap() int { return p.buf.Cap() }
-
-func (p layersPager) Len() int { return p.buf.Len() }
-
 func (p *layersPager) Reset() {
-	p.buf.Reset()
+	p.Buffer.Reset()
 
 	p.prevPageRead = 0
 	p.prevPageWrite = 0
@@ -202,14 +196,14 @@ func (p *layersPager) Read(b []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	totalPages := p.buf.Cap()/(len(b)-layersPageHeadSize) + 1
+	totalPages := p.Cap()/(len(b)-layersPageHeadSize) + 1
 	p.prevPageRead++
 	h := []byte{firmLayers, byte(totalPages), byte(p.prevPageRead)}
 	if n := copy(b[:layersPageHeadSize], h); n != layersPageHeadSize {
 		return n, io.ErrShortBuffer
 	}
 
-	n, err := p.buf.Read(b[layersPageHeadSize:])
+	n, err := p.Buffer.Read(b[layersPageHeadSize:])
 	n += layersPageHeadSize
 	if err != nil {
 		return n, err
@@ -240,7 +234,7 @@ func (p *layersPager) Write(b []byte) (int, error) {
 	}
 	p.prevPageWrite++
 
-	if n, err := p.buf.Write(b[layersPageHeadSize:]); err != nil {
+	if n, err := p.Buffer.Write(b[layersPageHeadSize:]); err != nil {
 		return layersPageHeadSize + n, err
 	}
 
