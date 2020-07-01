@@ -21,7 +21,7 @@ const (
 
 // Specific requests
 const (
-	repIn uint16 = (iota + 1) << 8
+	repIn uint16 = (iota + 0x0001) << 8
 	repOut
 	repFeature
 )

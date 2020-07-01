@@ -161,8 +161,8 @@ func (ls *Layers) UnmarshalText(text []byte) error {
 }
 
 const (
-	layersPageHeadSize = 3
-	layersPageDataSize = 256
+	layersPageHeadSize = 0x3
+	layersPageDataSize = 0x100
 	layersPageSize     = layersPageHeadSize + layersPageDataSize
 )
 
