@@ -199,7 +199,7 @@ func (p *layersPager) Read(b []byte) (int, error) {
 	totalPages := p.Cap()/(len(b)-layersPageHeadSize) + 1
 	p.prevPageRead++
 	h := []byte{firmLayers, byte(totalPages), byte(p.prevPageRead)}
-	if n := copy(b[:layersPageHeadSize], h); n != layersPageHeadSize {
+	if n := copy(b[:len(h)], h); n != layersPageHeadSize {
 		return n, io.ErrShortBuffer
 	}
 
@@ -234,15 +234,17 @@ func (p *layersPager) Write(b []byte) (int, error) {
 	}
 	p.prevPageWrite++
 
-	if n, err := p.Buffer.Write(b[layersPageHeadSize:]); err != nil {
-		return layersPageHeadSize + n, err
+	n, err := p.Buffer.Write(b[layersPageHeadSize:])
+	n += layersPageHeadSize
+	if err != nil {
+		return n, err
 	}
 
 	if b[totalPagesOff] == b[currentPageOff] {
-		return len(b), io.EOF
+		return n, io.EOF
 	}
 
-	return len(b), nil
+	return n, nil
 }
 
 // GetLayers returns the layers stored in the controller.
