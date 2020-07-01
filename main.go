@@ -17,6 +17,8 @@ import (
 	"gitlab.com/ebarkie/goblusb/internal/blusb"
 )
 
+const ok = "OK"
+
 type uints struct {
 	Want int
 	S    []uint
@@ -167,8 +169,6 @@ func main() {
 			}
 		}
 	}
-
-	const ok = "OK"
 
 	if len(setBright.S) > 0 {
 		fmt.Println("Setting brightness")

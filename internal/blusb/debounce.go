@@ -9,7 +9,7 @@ import "time"
 // GetDebounce returns the debounce duration stored in the controller.
 func (c Controller) GetDebounce() (time.Duration, error) {
 	data := make([]byte, 8)
-	_, err := c.getControlReport(featDebounce, data)
+	_, err := c.getControlReport(firmDebounce, data)
 	if err != nil {
 		return 0, err
 	}
@@ -24,6 +24,6 @@ func (c Controller) SetDebounce(dur time.Duration) error {
 	}
 
 	data := make([]byte, 8)
-	copy(data, []byte{featDebounce, byte(dur.Milliseconds())})
+	copy(data, []byte{firmDebounce, byte(dur.Milliseconds())})
 	return c.setControlReport(data)
 }

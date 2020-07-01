@@ -9,7 +9,7 @@ package blusb
 // The value range is 0-255.
 func (c Controller) GetBrightness() (uint, uint, error) {
 	data := make([]byte, 8)
-	_, err := c.getControlReport(featBrightness, data)
+	_, err := c.getControlReport(firmBrightness, data)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -25,6 +25,6 @@ func (c Controller) SetBrightness(usb, bt uint) error {
 	}
 
 	data := make([]byte, 8)
-	copy(data, []byte{featBrightness, byte(usb), byte(bt)})
+	copy(data, []byte{firmBrightness, byte(usb), byte(bt)})
 	return c.setControlReport(data)
 }

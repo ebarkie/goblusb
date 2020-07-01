@@ -26,15 +26,21 @@ const (
 	repFeature
 )
 
-// repFeature features
+// Bootloader features
 const (
-	featLayers     byte = iota + 0x01 // Get or set layers
-	featMacros                        // Get or set macros
-	featMatrix                        // Read matrix input
-	featBrightness                    // Get or set brightness
-	featVersion                       // Get firmware version
-	featDebounce                      // Get or set debounce duration
-	featBootloader                    // Enter or exit bootloader
+	bootPageData byte = iota + 0x01 // Send page data (firmware)
+	bootExit                        // Exit bootloader and boot the firmware
+)
+
+// Firmware features
+const (
+	firmLayers     byte = iota + 0x01 // Get or set layers
+	firmMacros                        // Get or set macros
+	firmMatrix                        // Read matrix input
+	firmBrightness                    // Get or set brightness
+	firmGetVersion                    // Get firmware version
+	firmDebounce                      // Get or set debounce duration
+	firmEnterBoot                     // Enter bootloader
 )
 
 // Default Vendor and Product ID's.

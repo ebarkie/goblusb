@@ -8,7 +8,7 @@ package blusb
 // integers.  These are usually written as "major.minor".
 func (c Controller) GetVersion() (int, int, error) {
 	data := make([]byte, 8)
-	_, err := c.getControlReport(featVersion, data)
+	_, err := c.getControlReport(firmGetVersion, data)
 	if err != nil {
 		return 0, 0, err
 	}

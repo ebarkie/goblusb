@@ -167,48 +167,53 @@ const (
 )
 
 type layersPager struct {
-	buf []byte
-	off int
+	buf *bytes.Buffer
 
-	lastPageRead  int
-	lastPageWrite int
-}
-
-func newLayersPager(buf []byte) layersPager {
-	return layersPager{buf: buf}
-}
-
-func (p layersPager) Bytes() []byte { return p.buf }
-
-func (p layersPager) empty() bool { return len(p.buf) <= p.off }
-
-func (p layersPager) Len() int { return len(p.buf) - p.off }
-
-func (p *layersPager) Reset() {
-	p.buf = p.buf[:0]
-	p.off = 0
-
-	p.lastPageRead = 0
-	p.lastPageWrite = 0
-}
-
-func (p *layersPager) Read(b []byte) (int, error) {
-	if p.empty() {
-		return 0, io.EOF
-	}
-
+	// Layers page header
+	//
 	//		          1                   2                   3
 	//    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	//   |       ID     |  Total pages   | Current Page  | Data          |
 	//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	totalPages := len(p.buf)/(len(b)-layersPageHeadSize) + 1
-	p.lastPageRead++
-	h := []byte{featLayers, byte(totalPages), byte(p.lastPageRead)}
-	n := copy(b[:layersPageHeadSize], h)
+	prevPageRead  int
+	prevPageWrite int
+}
 
-	n += copy(b[layersPageHeadSize:], p.buf[p.off:])
-	p.off += n - layersPageHeadSize
+func newLayersPager(buf []byte) layersPager {
+	return layersPager{buf: bytes.NewBuffer(buf)}
+}
+
+func (p layersPager) Bytes() []byte { return p.buf.Bytes() }
+
+func (p layersPager) Cap() int { return p.buf.Cap() }
+
+func (p layersPager) Len() int { return p.buf.Len() }
+
+func (p *layersPager) Reset() {
+	p.buf.Reset()
+
+	p.prevPageRead = 0
+	p.prevPageWrite = 0
+}
+
+func (p *layersPager) Read(b []byte) (int, error) {
+	if p.Len() < 1 {
+		return 0, io.EOF
+	}
+
+	totalPages := p.buf.Cap()/(len(b)-layersPageHeadSize) + 1
+	p.prevPageRead++
+	h := []byte{firmLayers, byte(totalPages), byte(p.prevPageRead)}
+	if n := copy(b[:layersPageHeadSize], h); n != layersPageHeadSize {
+		return n, io.ErrShortBuffer
+	}
+
+	n, err := p.buf.Read(b[layersPageHeadSize:])
+	n += layersPageHeadSize
+	if err != nil {
+		return n, err
+	}
 
 	// Pad the last page with 0xff's.
 	if n < len(b) {
@@ -228,16 +233,16 @@ func (p *layersPager) Write(b []byte) (int, error) {
 	if len(b) < layersPageHeadSize {
 		return 0, io.ErrShortWrite
 	}
-	// XXX ID should be featLayers but it comes through as zero
-	if (idOff != 0 && idOff != featLayers) ||
-		int(b[currentPageOff]) != p.lastPageWrite+1 {
+	// XXX ID should be firmLayers but it comes through as zero
+	if (b[idOff] != 0 && b[idOff] != firmLayers) ||
+		int(b[currentPageOff]) != p.prevPageWrite+1 {
 		return 0, io.ErrNoProgress
 	}
-	p.lastPageWrite++
+	p.prevPageWrite++
 
-	// FIXME: this is pretty inefficient, it would be nice to use
-	// copy() instead.
-	p.buf = append(p.buf, b[layersPageHeadSize:]...)
+	if n, err := p.buf.Write(b[layersPageHeadSize:]); err != nil {
+		return layersPageHeadSize + n, err
+	}
 
 	if b[totalPagesOff] == b[currentPageOff] {
 		return len(b), io.EOF
@@ -249,10 +254,10 @@ func (p *layersPager) Write(b []byte) (int, error) {
 // GetLayers returns the layers stored in the controller.
 func (c Controller) GetLayers() (ls Layers, err error) {
 	// Read all layer pages into a buffer.
-	var p layersPager
+	p := newLayersPager([]byte{})
 	for {
 		page := make([]byte, layersPageSize)
-		_, err = c.getControlReport(featLayers, page)
+		_, err = c.getControlReport(firmLayers, page)
 		if err != nil {
 			return
 		}

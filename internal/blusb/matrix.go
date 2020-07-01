@@ -32,7 +32,7 @@ func (p *MatrixPos) UnmarshalBinary(data []byte) error {
 // zero value.
 func (c Controller) GetMatrix() (pos MatrixPos, err error) {
 	data := make([]byte, 8)
-	_, err = c.getControlReport(featMatrix, data)
+	_, err = c.getControlReport(firmMatrix, data)
 	if err != nil {
 		return
 	}
