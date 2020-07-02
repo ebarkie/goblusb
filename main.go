@@ -96,7 +96,7 @@ func main() {
 		c.SkipSets = true
 	}
 
-	// Exclusive operations.
+	// Exclusive operations
 	if *monitorMatrix {
 		// Monitoring too quickly after pressing enter to start this
 		// command bombards standard input with repeating carriage
@@ -121,7 +121,7 @@ func main() {
 		}
 	}
 
-	// Combinable operations.
+	// Combinable operations
 	if *version {
 		maj, min, err := c.GetVersion()
 		if err != nil {
