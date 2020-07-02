@@ -1,5 +1,4 @@
 # blusb
-
 ```go
 import "gitlab.com/ebarkie/goblusb/internal/blusb"
 ```
