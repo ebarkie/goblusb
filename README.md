@@ -22,6 +22,10 @@ $ go get gitlab.com/ebarkie/goblusb
 
 ```
 Usage of ./goblusb:
+  -check
+    	don't actually set anything
+  -debug
+    	enable extra debug output
   -get-brightness
     	get usb and bt brightness
   -get-debounce
