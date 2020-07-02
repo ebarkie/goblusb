@@ -7,8 +7,11 @@
 package blusb
 
 import (
+	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 
 	"github.com/google/gousb"
 )
@@ -43,17 +46,31 @@ const (
 	firmEnterBoot                     // Enter bootloader
 )
 
-// Default Vendor and Product ID's.
+// Defaults
 var (
+	// Controller Vendor ID
 	VID gousb.ID = 0x04b3
+
+	// Controller Product ID
 	PID gousb.ID = 0x301c
+
+	// Debug logger
+	Debug *log.Logger = log.New(ioutil.Discard, "[DBUG] ", 0)
 )
 
 // Controller holds the Blusb Universal BT-USB Model M Controller context.
 type Controller struct {
-	ctx  *gousb.Context // USB device handling context
-	dev  *gousb.Device  // Opened USB device
-	done func()         // Release claimed interface and config
+	// USB device handling context
+	ctx *gousb.Context
+
+	// Opened USB device
+	dev *gousb.Device
+
+	// Release claimed interface and config
+	done func()
+
+	// Skip set operations so nothing is changed (enabled with check mode)
+	SkipSets bool
 }
 
 // Open opens the controller and claims the default interface.
@@ -100,6 +117,7 @@ func (c Controller) String() string {
 func (c Controller) getControlReport(feat byte, b []byte) (int, error) {
 	n, err := c.dev.Control(gousb.ControlInterface|gousb.ControlIn|gousb.ControlClass,
 		reqGetReport, repFeature|uint16(feat), 0, b)
+	Debug.Printf("Control in (feat=%#x, err=%v):\n%s\n", feat, err, hex.Dump(b))
 	if err != nil {
 		return n, err
 	}
@@ -111,6 +129,10 @@ func (c Controller) getControlReport(feat byte, b []byte) (int, error) {
 }
 
 func (c Controller) setControlReport(b []byte) error {
+	Debug.Printf("Control out (SkipSets=%t):\n%s\n", c.SkipSets, hex.Dump(b))
+	if c.SkipSets {
+		return nil
+	}
 	_, err := c.dev.Control(gousb.ControlInterface|gousb.ControlOut|gousb.ControlClass,
 		reqSetReport, repFeature|uint16(b[0]), 0, b)
 	return err

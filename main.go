@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -58,6 +59,9 @@ func writeTextFile(v encoding.TextMarshaler, filename string) error {
 }
 
 func main() {
+	check := flag.Bool("check", false, "don't actually set anything")
+	debug := flag.Bool("debug", false, "enable extra debug output")
+
 	monitorMatrix := flag.Bool("monitor-matrix", false, "monitor for key presses")
 
 	version := flag.Bool("version", false, "firmware version")
@@ -76,6 +80,10 @@ func main() {
 
 	flag.Parse()
 
+	if *debug {
+		blusb.Debug.SetOutput(os.Stderr)
+	}
+
 	c, err := blusb.Open()
 	if err != nil {
 		fmt.Printf("Open device error: %s\n", err)
@@ -83,6 +91,10 @@ func main() {
 	}
 	defer c.Close()
 	fmt.Printf("Blusb Controller - %s\n\n", c)
+
+	if *check {
+		c.SkipSets = true
+	}
 
 	// Exclusive operations.
 	if *monitorMatrix {

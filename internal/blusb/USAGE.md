@@ -1,4 +1,5 @@
 # blusb
+
 ```go
 import "gitlab.com/ebarkie/goblusb/internal/blusb"
 ```
@@ -10,11 +11,17 @@ various settings of the Blusb Universal BT-USB Model M Controller.
 
 ```go
 var (
+	// Controller Vendor ID
 	VID gousb.ID = 0x04b3
+
+	// Controller Product ID
 	PID gousb.ID = 0x301c
+
+	// Debug logger
+	Debug *log.Logger = log.New(ioutil.Discard, "[DBUG] ", 0)
 )
 ```
-Default Vendor and Product ID's.
+Defaults
 
 ```go
 var (
@@ -29,6 +36,9 @@ Errors
 
 ```go
 type Controller struct {
+
+	// Skip set operations so nothing is changed (enabled with check mode)
+	SkipSets bool
 }
 ```
 
