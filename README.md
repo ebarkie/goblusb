@@ -1,4 +1,4 @@
-![Push](https://github.com/ebarkie/goblusb/workflows/Push/badge.svg?branch=master)
+![Push](https://github.com/ebarkie/goblusb/workflows/Push/badge.svg)
 
 # go-blusb
 
