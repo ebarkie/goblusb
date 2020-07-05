@@ -15,7 +15,7 @@ Things that it doesn't do but would be nice:
 ## Installation
 
 ```sh
-$ go get gitlab.com/ebarkie/goblusb
+$ go get github.com/ebarkie/goblusb
 ```
 
 ## Usage

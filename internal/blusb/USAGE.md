@@ -1,6 +1,6 @@
 # blusb
 ```go
-import "gitlab.com/ebarkie/goblusb/internal/blusb"
+import "github.com/ebarkie/goblusb/internal/blusb"
 ```
 
 Package blusb implements protocol and data structures for configuring the

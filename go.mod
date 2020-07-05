@@ -1,4 +1,4 @@
-module gitlab.com/ebarkie/goblusb
+module github.com/ebarkie/goblusb
 
 go 1.14
 

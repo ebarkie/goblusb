@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/ebarkie/goblusb/internal/blusb"
+	"github.com/ebarkie/goblusb/internal/blusb"
 )
 
 const ok = "OK"
