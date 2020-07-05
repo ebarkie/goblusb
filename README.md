@@ -1,3 +1,5 @@
+![Push](https://github.com/ebarkie/goblusb/workflows/Push/badge.svg?branch=master)
+
 # go-blusb
 
 Go package and Command Line Interface for interacting with the Blusb Universal
