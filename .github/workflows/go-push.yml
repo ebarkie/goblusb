@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Go 1.14 pipeline
-        uses: ebarkie/actions/go/1.14@v1
+        uses: ebarkie/actions/go/1.14@master
         with:
           apt_install: libusb-1.0-0-dev
           build: true
