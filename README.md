@@ -2,8 +2,8 @@
 
 # go-blusb
 
-Go package and Command Line Interface for interacting with the Blusb Universal
-BT-USB Model M Controller.
+Command Line Interface for interacting with the Blusb Universal BT-USB Model M
+Controller.
 
 Things that it doesn't do but would be nice:
 
