@@ -31,7 +31,7 @@ type Macros [numMacros]Macro
 // MarshalBinary encodes a 193-byte macro table data packet.
 func (ms Macros) MarshalBinary() (data []byte, err error) {
 	data = make([]byte, 1+len(ms)*macroSize)
-	data[0] = byte(firmMacros)
+	data[0] = firmMacros
 	for i := range ms {
 		data[1+i*macroSize] = ms[i].Mods
 		data[1+i*macroSize+1] = ms[i].Reserved
