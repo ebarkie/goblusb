@@ -9,7 +9,6 @@ import (
 	"encoding"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -55,7 +54,7 @@ func writeTextFile(v encoding.TextMarshaler, filename string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(filename, text, 0644)
+	return os.WriteFile(filename, text, 0644)
 }
 
 func main() {
@@ -203,7 +202,7 @@ func main() {
 	}
 
 	if *setLayers != "" {
-		text, err := ioutil.ReadFile(*setLayers)
+		text, err := os.ReadFile(*setLayers)
 		if err != nil {
 			fmt.Printf("Set layers parse error: %s\n", err)
 			return
@@ -223,7 +222,7 @@ func main() {
 	}
 
 	if *setMacros != "" {
-		text, err := ioutil.ReadFile(*setMacros)
+		text, err := os.ReadFile(*setMacros)
 		if err != nil {
 			fmt.Printf("Set macros parse error: %s\n", err)
 			return
