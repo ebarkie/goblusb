@@ -10,7 +10,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 
 	"github.com/google/gousb"
@@ -55,7 +54,7 @@ var (
 	PID gousb.ID = 0x301c
 
 	// Debug logger
-	Debug *log.Logger = log.New(ioutil.Discard, "[DBUG] ", 0)
+	Debug *log.Logger = log.New(io.Discard, "[DBUG] ", 0)
 )
 
 // Controller holds the Blusb Universal BT-USB Model M Controller context.
