@@ -1,5 +1,5 @@
 module github.com/ebarkie/goblusb
 
-go 1.17
+go 1.19
 
-require github.com/google/gousb v2.1.0+incompatible
+require github.com/google/gousb v1.1.2
