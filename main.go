@@ -62,6 +62,7 @@ func main() {
 	debug := flag.Bool("debug", false, "enable extra debug output")
 
 	monitorMatrix := flag.Bool("monitor-matrix", false, "monitor for key presses")
+	updateFirmware := flag.String("update-firmware", "", "update firmware")
 
 	version := flag.Bool("version", false, "firmware version")
 
@@ -118,6 +119,16 @@ func main() {
 			}
 			prevPos = pos
 		}
+	}
+
+	if *updateFirmware != "" {
+		fmt.Printf("Flashing firmware: %s\n", *updateFirmware)
+		if err := c.UpdateFirmware(*updateFirmware); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(ok)
+		}
+		return
 	}
 
 	// Combinable operations

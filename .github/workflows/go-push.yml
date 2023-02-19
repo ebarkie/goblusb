@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Run Go 1.19 pipeline
-        uses: ebarkie/actions/go/1.19@master
+      - name: Run Go 1.20 pipeline
+        uses: ebarkie/actions/go/1.20@master
         with:
           apt_install: libusb-1.0-0-dev
           build: true

@@ -17,3 +17,7 @@ func (c Controller) ExitBoot() error {
 	data[0] = bootExit
 	return c.setControlReport(data)
 }
+
+func (c Controller) UpdateFirmware(filename string) error {
+	return nil
+}
