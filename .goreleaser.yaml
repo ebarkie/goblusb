@@ -1,5 +1,6 @@
 builds:
-  goos:
-    - linux
-  goarch:
-    - amd64
+  -
+    goos:
+      - linux
+    goarch:
+      - amd64
